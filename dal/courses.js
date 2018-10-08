@@ -5,33 +5,33 @@ class courses{
 
     }
 
-    getAllCoursesInCbaNotInLms(callback){
-        console.log("\n\n\n\n Inside course in cba lms");
-        let sqlCoursesInCbaNotInLms = this.setSqlAllCoursesInCbaNotInLms("Fall 2018");
+    getAllCoursesInCbaNotInLms(semester, callback){
+        let sqlCoursesInCbaNotInLms = this.setSqlAllCoursesInCbaNotInLms(semester);
         mySql.query(sqlCoursesInCbaNotInLms, function(err, result){
             if(err){
                 console.log(err);
                 mySql.end();
-                return;
+                callback(err, null);
             }
             console.log(result);
             mySql.end();
-            callback(result);
+            callback(null, result);
         })
         console.log("Inside get courses");
     }
 
-    getDeptCoursesInCbaNtLms(departmentTitle, callback){
-        let sqlDeptCoursesInCbaNtLms = this.setSqlDeptCoursesInCbaNotInLms(departmentTitle, "Fall 2018");
+    getDeptCoursesInCbaNtLms(departmentTitle, semester, callback){
+        let sqlDeptCoursesInCbaNtLms = this.setSqlDeptCoursesInCbaNotInLms(departmentTitle, semester);
 
         mySql.query(sqlDeptCoursesInCbaNtLms, function(err, result){
             if(err){
                 console.log("Error in getDeptCoursesInCbaNotInLms");
                 console.log(err);
+                callback(err, null);
                 return;
             }
             console.log("Successfully executed query sqlDeptCoursesInCbaNotInLms");
-            callback(result);
+            callback(null, result);
         })
     }
 

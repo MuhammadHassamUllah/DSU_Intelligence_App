@@ -1,18 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var courses = require('../dal/courses.js');
+var coursesBll = require('../bll/coursesBll.js');
 
-/*
-router.get('/', function(req, res){
-    let course = new courses();
-    course.getAllCoursesInCbaNotInLms(function(result){
-        console.log('Inside courses route');
-        //res.send(result);
-        res.render('courses', {courses: result});
-    });
-
-});
-*/
 
 router.get('/IT',function(req, res){
     console.log("Inside courses/IT route");
@@ -20,21 +10,35 @@ router.get('/IT',function(req, res){
 })
 
 router.get('/inCbaNotInLms/:departmentShortCode', function(req, res){
-    let course = new courses();
+    let course = new coursesBll();
     let departmentShortCode = req.params.departmentShortCode;
 
+    course.getDeptCoursesInCbaNtInLms(departmentShortCode, "Fall 2018")
+    .then(function(result){
+        res.render('courses/courses', {courses: result});
+    })
+    .catch(function(err){
+        res.render('error', {error: err});
+    })
+    /*
     course.getDeptCoursesInCbaNtLms(departmentShortCode, function(result){
         console.log("Get Dept Courses In CBA Not In LMS Route Executed");
         res.render('courses/courses', {courses: result});
-    })
+    })*/
 })
 
 router.get('/allInCbaNotInLms', function(req, res){
-    let course = new courses();
+    let courseBll = new coursesBll();
 
-    course.getAllCoursesInCbaNotInLms(function(result){
+    courseBll.getAllCoursesInCbaNotInLms("Fall 2018")
+    .then((result) => {
         res.render('courses/courses', {courses: result})
     })
+    .catch((err) => {
+        console.log(err);
+        res.render('error', {error: err})
+    })
+
 })
 
 router.get('/inLmsNotInCba/:departmentShortCode', function(req, res){
@@ -45,8 +49,7 @@ router.get('/inLmsNotInCba/:departmentShortCode', function(req, res){
 
 router.get('/department/:departmentShortCode', function(req, res){
     let departShortCode = req.params.departmentShortCode;
-
-    console.log("\n\n\n\n\n inside course details");
+    
     res.render('courses/coursesDetails', {departShortCode: departShortCode});
 })
 
