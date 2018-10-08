@@ -15,16 +15,11 @@ router.get('/inCbaNotInLms/:departmentShortCode', function(req, res){
 
     course.getDeptCoursesInCbaNtInLms(departmentShortCode, "Fall 2018")
     .then(function(result){
-        res.render('courses/courses', {courses: result});
+        res.render('courses/courses', {courses: result, in: "Cba", notIn: "Lms"});
     })
     .catch(function(err){
         res.render('error', {error: err});
     })
-    /*
-    course.getDeptCoursesInCbaNtLms(departmentShortCode, function(result){
-        console.log("Get Dept Courses In CBA Not In LMS Route Executed");
-        res.render('courses/courses', {courses: result});
-    })*/
 })
 
 router.get('/allInCbaNotInLms', function(req, res){
@@ -32,7 +27,7 @@ router.get('/allInCbaNotInLms', function(req, res){
 
     courseBll.getAllCoursesInCbaNotInLms("Fall 2018")
     .then((result) => {
-        res.render('courses/courses', {courses: result})
+        res.render('courses/courses', {courses: result,  in: "Cba", notIn: "Lms"})
     })
     .catch((err) => {
         console.log(err);
@@ -41,10 +36,29 @@ router.get('/allInCbaNotInLms', function(req, res){
 
 })
 
-router.get('/inLmsNotInCba/:departmentShortCode', function(req, res){
-    let departmentShortCode = req.params.departmentShortCode;
+router.get('/allInLmsNotInCba', function(req, res){
+    let courseBll = new coursesBll();
 
-    course.getDeptCoursesInLmsNotInCba();
+    courseBll.getAllCoursesInLmsNotInCba("Fall 2018")
+    .then(function(result){
+        res.render('courses/courses', {courses: result,  in: "Lms", notIn: "Cba"})
+    })
+})
+
+router.get('/inLmsNotInCba/:departmentShortCode', function(req, res){
+    console.log("\n\n\n inside lms not in CBA");
+    let departmentShortCode = req.params.departmentShortCode;
+    
+    console.log("\n\n\n\n\n", departmentShortCode);
+    let courseBll = new coursesBll();
+    
+    courseBll.getDeptCoursesInLmsNotInCba(departmentShortCode, "Fall 2018")
+    .then(function(result){
+        res.render('courses/courses', {courses: result, in: "Lms", notIn: "Cba"});
+    })
+    .catch(function(err){
+        res.render('error', {error: err});
+    })
 })
 
 router.get('/department/:departmentShortCode', function(req, res){

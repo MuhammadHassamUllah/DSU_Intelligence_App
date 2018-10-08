@@ -33,6 +33,51 @@ class coursesBll {
             })
         })
     }
+
+    getAllCoursesInLmsNotInCba(semester){
+        var course = new courses();
+        
+        return new Promise(function(resolve, reject){
+            course.getAllCoursesInLmsNotInCba(semester, function(err, result){
+                if(err){
+                    reject(err);
+                }
+                else{
+                    resolve(result);
+                }
+            })
+        })
+    }
+
+    getDeptCoursesInLmsNotInCba(departmentTitle, semester){
+        let lmsDeptTitle;
+        var course = new courses();
+
+        switch(departmentTitle){
+            case "CS":
+                lmsDeptTitle = "Computer Science"
+                break;
+            case "ME":
+                lmsDeptTitle = "Mechanical Engineering"
+                break;
+            case "EE":
+                lmsDeptTitle = "Electrical Engineering"
+                break;    
+            case "MS":
+                lmsDeptTitle = "Management Sciences"
+        }
+
+        return new Promise(function(resolve, reject){
+            course.getDeptCoursesInLmsNotInCba(lmsDeptTitle, semester, function(err, result){
+                if(err){
+                    reject(err);
+                }
+                else{
+                    resolve(result);
+                }
+            })
+        });
+    }
 }
 
 module.exports = coursesBll;

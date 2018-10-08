@@ -35,14 +35,98 @@ class courses{
         })
     }
 
-    getDeptCoursesInLmsNotInCba(departmentTitle, semester){
+    getDeptCoursesInLmsNotInCba(departmentTitle, semester, callback){
         console.log("Inside DAL for Department Courses in LMS Not In CBA");
+        let sql = this.setSqlDeptCoursesInLmsNotInCba(departmentTitle, semester);
 
+        mySql.query(sql, function(err, result){
+            if(err){
+                console.log(err);
+                callback(err, null);
+            }
+            else{
+                callback(null, result);
+            }
+        })
+    }
 
+    getAllCoursesInLmsNotInCba(semester, callback){
+        let sql = this.setSqlAllCoursesInLmsNotInCba(semester);
+
+        mySql.query(sql, function(err, result){
+            if(err){
+                console.log(err);
+                callback(err, null);
+            }
+            else {
+                callback(null, result);
+            }
+        })
+    }
+
+    setSqlAllCoursesInLmsNotInCba(semester){
+        let query = "SELECT Lms_Courses.shortname, Lms_Courses.fullname, Lms_Courses.deptTitle FROM\
+        (select DISTINCT(concat(t.templatecourse_code, '-' ,d.department_shortCode,'-181-',sc.section_title)) AS CBA_Code,\
+        e.enrollment_id, e.studentID, t.deptID, e.courseID, e.enrollment_status, c.templateCourseID, c.academicSessionID\
+        from enrollments 					e\
+        inner join courses					c 	on c.course_id = e.courseID\
+        inner join templatecourses				t 	on t.templatecourse_id = c.templateCourseID\
+        inner join course_section_allocation			csa 	on csa.courseid = e.courseID\
+        inner join sections 					sc 	on sc.section_id = csa.sectionid\
+        inner join departments					d 	on d.department_id = t.deptID\
+        inner join course_additional_teacher_allocation		cta 	on cta.courseid = c.course_id\
+        inner join teachers					tch 	on tch.teacher_id = cta.teacherid\
+        inner join academicsessions 				a 	on a.academicsessions_id = c.academicSessionID\
+        inner join semestertypes				sem 	on sem.semestertype_id = a.semesterTypeID\
+        where c.academicSessionID = 21\
+        and e.enrollment_status=0) AS Cba_Courses\
+        RIGHT JOIN\
+        (SELECT DISTINCT(courses.shortname) AS shortname, courses.fullname, departments.name AS deptTitle\
+        FROM CBA_LMS_MERGE.mdl_course AS courses\
+        \
+        INNER JOIN (SELECT courseCat.name, courseCat.id, courseCat.parent\
+                FROM CBA_LMS_MERGE.mdl_course_categories AS courseCat\
+                WHERE courseCat.parent = (SELECT courseCat2.id\
+                                FROM CBA_LMS_MERGE.mdl_course_categories AS 		courseCat2\
+                                WHERE courseCat2.name = \"" + semester + "\")) AS departments\
+                                ON courses.category = departments.id) AS Lms_Courses\
+        ON Lms_Courses.shortname= Cba_Courses.CBA_Code\
+        WHERE Cba_Courses.CBA_Code IS NULL"
+
+        return query;
     }
 
     setSqlDeptCoursesInLmsNotInCba(departmentTitle, semester){
-        let query = "";
+        let query = "SELECT Lms_Courses.shortname, Lms_Courses.fullname, Lms_Courses.deptTitle FROM\
+        (select DISTINCT(concat(t.templatecourse_code, '-' ,d.department_shortCode,'-181-',sc.section_title)) AS CBA_Code,\
+        e.enrollment_id, e.studentID, t.deptID, e.courseID, e.enrollment_status, c.templateCourseID, c.academicSessionID\
+        from enrollments 					e\
+        inner join courses					c 	on c.course_id = e.courseID\
+        inner join templatecourses				t 	on t.templatecourse_id = c.templateCourseID\
+        inner join course_section_allocation			csa 	on csa.courseid = e.courseID\
+        inner join sections 					sc 	on sc.section_id = csa.sectionid\
+        inner join departments					d 	on d.department_id = t.deptID\
+        inner join course_additional_teacher_allocation		cta 	on cta.courseid = c.course_id\
+        inner join teachers					tch 	on tch.teacher_id = cta.teacherid\
+        inner join academicsessions 				a 	on a.academicsessions_id = c.academicSessionID\
+        inner join semestertypes				sem 	on sem.semestertype_id = a.semesterTypeID\
+        where c.academicSessionID = 21\
+        and e.enrollment_status=0) AS Cba_Courses\
+        RIGHT JOIN\
+        (SELECT DISTINCT(courses.shortname) AS shortname, courses.fullname, departments.name AS deptTitle\
+        FROM CBA_LMS_MERGE.mdl_course AS courses\
+        \
+        INNER JOIN (SELECT courseCat.name, courseCat.id, courseCat.parent\
+                FROM CBA_LMS_MERGE.mdl_course_categories AS courseCat\
+                WHERE courseCat.parent = (SELECT courseCat2.id\
+                                FROM CBA_LMS_MERGE.mdl_course_categories AS 		courseCat2\
+                                WHERE courseCat2.name = \"" + semester + "\")) AS departments\
+                                ON courses.category = departments.id) AS Lms_Courses\
+        ON Lms_Courses.shortname= Cba_Courses.CBA_Code\
+        WHERE Cba_Courses.CBA_Code IS NULL\
+        AND Lms_Courses.deptTitle = \"" + departmentTitle + "\"\ "
+   
+        return query;
     }
     setSqlDeptCoursesInCbaNotInLms(departmentTitle, semester){
 
