@@ -5,16 +5,16 @@ class studentEnrollments{
 
     }
 
-    getStdEnrInCbaNotInLms(semester, callback){
+    getAllStdEnrInCbaNotInLms(semester, callback){
         let queryEnrInCbaNtInLms = this.getQueryStdEnrInCbaNotInLms(semester);
         mySql.query(queryEnrInCbaNtInLms, function(err, result){
             if(err){
                 console.log(err);
-                return;
+                callback(err, null);
             }
             console.log("Query for enrollments in CBA but not in LMS executed Successfully");
             mySql.end();
-            callback(result);
+            callback(null, result);
         })
     }
 

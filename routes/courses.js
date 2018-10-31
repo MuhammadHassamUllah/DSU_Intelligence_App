@@ -1,8 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var courses = require('../dal/courses.js');
 var coursesBll = require('../bll/coursesBll.js');
-
+let MoodleCourse = require('../moodle_web_services/courses/course.js');
 
 router.get('/IT',function(req, res){
     console.log("Inside courses/IT route");
@@ -67,4 +66,18 @@ router.get('/department/:departmentShortCode', function(req, res){
     res.render('courses/coursesDetails', {departShortCode: departShortCode});
 })
 
+router.get('/lms/createCourse', function(req, res, next){
+    console.log("Inside course creation api");
+
+    let moodleCourse = new MoodleCourse();
+
+    moodleCourse.createCourse([])
+    .then(function(success){
+        console.log("Course created successfully");
+        console.log(success);
+    }).catch(function(err){
+        console.log("Course not created");
+        console.log(err);
+    });
+})
 module.exports = router;
